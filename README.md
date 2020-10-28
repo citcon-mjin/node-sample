@@ -1,6 +1,6 @@
 # node-sample
 
-TossPayments 결제연동 Node.js 샘플 코드입니다.
+TossPayments 결제연동 Node.js 샘플 코드입니다. Express로 구성되었습니다.
 
 ## 테스트하기
 

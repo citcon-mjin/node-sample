@@ -4,7 +4,7 @@ var uuid = require("uuid").v4;
 
 var router = express.Router();
 
-var secretKey = "test_ak_mnRQoOaPz8LwjZD1Oljry47BMw6v";
+var secretKey = "test_ak_ZORzdMaqN3wQd5k6ygr5AkYXQGwy";
 
 router.get("/", function (req, res) {
   res.render("index", {
@@ -26,18 +26,21 @@ router.get("/success", function (req, res) {
         orderId: req.query.orderId,
         amount: req.query.amount,
       },
+      responseType: "json",
     })
-    .then(function (confirmResponse) {
+    .then(function (response) {
+      console.log(response.body);
       // TODO: 구매 완료 비즈니스 로직 구현
 
       res.render("success", {
         title: "성공적으로 구매했습니다",
-        amount: confirmResponse.body.totalAmount,
-        receiptUrl: confirmResponse.body.receiptUrl,
+        amount: response.body.totalAmount,
       });
     })
-    .catch(function (failResponse) {
-      res.redirect("/fail");
+    .catch(function (error) {
+      res.redirect(
+        `/fail?code=${error.response?.body?.code}&message=${error.response?.body?.message}`
+      );
     });
 });
 

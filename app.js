@@ -33,7 +33,16 @@ app.use(function (err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.render("error");
+  res.render("fail", {
+    code: "UNKNOWN_ERROR",
+    message: "알 수 없는 에러가 발생했습니다.",
+  });
+});
+
+const PORT = 8080;
+
+app.listen(PORT, () => {
+  console.log(`http://localhost:${PORT} 으로 샘플 앱이 실행되었습니다.`);
 });
 
 module.exports = app;

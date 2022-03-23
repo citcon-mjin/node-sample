@@ -1,38 +1,178 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
   <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
     <title><%= title %></title>
-    <meta httpEquiv="x-ua-compatible" content="ie=edge" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, shrink-to-fit=no"
-    />
-    <link rel="stylesheet" href="/stylesheets/style.css" />
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+
+    <script src="https://js.tosspayments.com/v1"></script>
+    <!-- HTML5 shim 和 Respond.js 是为了让 IE8 支持 HTML5 元素和媒体查询（media queries）功能 -->
+    <!-- 警告：通过 file:// 协议（就是直接将 html 页面拖拽到浏览器中）访问页面时 Respond.js 不起作用 -->
+    <!--[if lt IE 9]>
+      <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+    <![endif]-->
+    <script>
+        function uuid() {
+            var uuid = "", i, random;
+            for (i = 0; i < 32; i++) {
+                random = Math.random() * 16 | 0;
+                if (i == 8 || i == 12 || i == 16 || i == 20) {
+                    uuid += "-";
+                }
+                uuid += (i == 12 ? 4 : (i == 16 ? (random & 3 | 8) : random)).toString(16);
+            }
+            return uuid;
+        }
+
+        function payMethod() {
+            var frm = document.forms["frm1"];
+            var pay_method = frm.elements["pay_method"].value;
+            if(pay_method == 'CARD') {
+                document.getElementById("cIssuerDiv").style.display = "";
+            } else {
+                document.getElementById("cIssuerDiv").style.display = "none";
+            }
+        }
+
+        window.onload = function(){
+            document.forms["frm1"].elements["order_id"].value = uuid();
+
+            var button = document.getElementById("payment-button");
+            button.addEventListener("click", function () {
+                var frm = document.forms["frm1"];
+                var card_issuer = frm.elements["card_issuer"].value;
+                var amount = frm.elements["amount"].value;
+                var order_id = frm.elements["order_id"].value;
+                var pay_method = frm.elements["pay_method"].value;
+                var card_issuer = frm.elements["card_issuer"].value;
+                var data = {
+                    amount: amount,
+                    orderId: order_id,
+                    orderName: "<%= orderName %>",
+                    customerName: "<%= customerName %>",
+                    successUrl: window.location.origin + "/success",
+                    failUrl: window.location.origin + "/fail",
+                    //_skipAuth: 'FORCE_SUCCESS',
+                };
+                var pay = '';
+                if (pay_method === 'TRANSFER') {
+                    pay = 'TRANSFER';
+                } else {
+                    pay = 'CARD';
+                }
+                // easy pay
+                if(pay_method == 'TOSSPAY' || pay_method == 'LPAY' || pay_method == 'SAMSUNGPAY' || pay_method == 'LGPAY') {
+                    data.flowMode = 'DIRECT';
+                    data.easyPay = pay_method;
+                }
+                // cardCompany·enum
+                if(pay_method == 'CARD' && card_issuer != 'ALL') {
+                    data.flowMode = 'DIRECT';
+                    data.cardCompany = card_issuer;
+                }
+                console.log('pay type: ', pay);
+                console.log(JSON.stringify(data))
+                var tossPayments = TossPayments("<%= clientKey %>");
+                tossPayments.requestPayment(pay, data);
+            });
+        }
+    </script>
+
+
   </head>
   <body>
-    <section>
-      <h1>구매하기</h1>
-      <img src="/images/toss-tee.png" style="max-width: 100%" />
-      <h3>토스 티셔츠</h3>
-      <span>1,000 원</span>
-      <button id="payment-button">결제하기</button>
-    </section>
-    <script src="https://js.tosspayments.com/v1"></script>
-    <script>
-      var tossPayments = TossPayments("test_ck_OEP59LybZ8Bdv6A1JxkV6GYo7pRe");
+    <div class="container">
+        <div class="row">
+            <h3 class="text-center">TOSS Payment Testing Page</h3>
+        </div>
+        <div class="row" style="margin-bottom: 10px;"> </div>
+        <div class="row">
+            <form class="form-horizontal" id="frm1" method="POST">
+                <div class="form-group">
+                    <label for="pMethod" class="col-sm-3 control-label">Payment Method</label>
+                    <div class="col-sm-9">
+                        <select class="form-control" id="pMethod" name="pay_method" onchange="payMethod()">
+                            <option value="CARD">Credit Card</option>
+                            <option value="TRANSFER">Bank Transfer</option>
+                            <option value="LPAY">LPAY</option>
+                            <option value="SAMSUNGPAY">SAMSUNGPAY</option>
+                            <option value="TOSSPAY">TOSSPAY</option>
+                            <option value="LGPAY">LG pay</option>
+                          </select>
+                    </div>
+                </div>
+                <div id="cIssuerDiv" class="form-group">
+                    <label for="cIssuer" class="col-sm-3 control-label">Card Issuers</label>
+                    <div class="col-sm-9">
+                        <select class="form-control" id="cIssuer" name="card_issuer">
+                            <option value="ALL">All</option>
+                            <option value="GWANGJUBANK">Gwangju Bank</option>
+                            <option value="KOOKMIN">KB Kookmin Card</option>
+                            <option value="NONGHYEOP">NH Nonghyup Card</option>
+                            <option value="LOTTE">Lotte Card</option>
+                            <option value="KDBBANK">KDB Industrial Bank</option>
+                            <option value="SAMSUNG">Samsung Card</option>
+                            <option value="SAEMAUL">Saemaul Geumgo</option>
+                            <option value="SUHYEOP">Sh Suhyup Bank</option>
+                            <option value="SHINHAN">Shinhan Card</option>
+                            <option value="SHINHYEOP">credit union</option>
+                            <option value="CITI">Citi Card</option>
+                            <option value="WOORI">Woori Card</option>
+                            <option value="POST">Post office deposit insuranc</option>
+                            <option value="SAVINGBANK">Savings Bank Federation</option>
+                            <option value="JEONBUKBANK">Jeonbuk Bank</option>
+                            <option value="JEJUBANK">Jeju Bank</option>
+                            <option value="KAKAOBANK">Kakao Bank</option>
+                            <option value="HANA">Hana Card</option>
+                            <option value="HYUNDAI">Hyundai Card</option>
+                            <option value="BC">BC Card</option>
+                            <option value="DINERS">Diners Club</option>
+                            <option value="DISCOVER">discover</option>
+                            <option value="MASTER">master card</option>
+                            <option value="VISA">VISA</option>
+                            <option value="UNIONPAY">UnionPay</option>
+                            <option value="JCB">JCB</option>
+                          </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="orderId" class="col-sm-3 control-label">Order ID</label>
+                    <div class="col-sm-9">
+                      <input type="text" class="form-control" name="order_id" value="">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="amountId" class="col-sm-3 control-label">Amount</label>
+                    <div class="col-sm-9">
+                        <div class="input-group">
+                            <div class="input-group-addon">KRW</div>
+                            <input type="text" class="form-control" name="amount" value="3100">
+                          </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-3 col-sm-9">
+                      <button type="button" class="btn btn-default" id="payment-button">Create Order</button>
+                    </div>
+                </div>
+              </form>
+        </div>
+      </div>
+    
 
-      var button = document.getElementById("payment-button");
+    
 
-      button.addEventListener("click", function () {
-        tossPayments.requestPayment("카드", {
-          amount: 1000,
-          orderId: "<%= orderId %>",
-          orderName: "토스 티셔츠",
-          customerName: "<%= customerName %>",
-          successUrl: window.location.origin + "/success",
-          failUrl: window.location.origin + "/fail",
-        });
-      });
-    </script>
+
+    <!-- jQuery (Bootstrap 的所有 JavaScript 插件都依赖 jQuery，所以必须放在前边) -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js" integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ" crossorigin="anonymous"></script>
+    <!-- 加载 Bootstrap 的所有 JavaScript 插件。你也可以根据需要只加载单个插件。 -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous"></script>
   </body>
 </html>
+

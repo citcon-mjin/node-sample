@@ -4,15 +4,31 @@ var uuid = require("uuid").v4;
 
 var router = express.Router();
 
-var secretKey = "test_ak_ZORzdMaqN3wQd5k6ygr5AkYXQGwy";
+var secretKey = process.env.API_KEY;
+var clientKey = process.env.CLIENT_KEY;
 
 router.get("/", function (req, res) {
   res.render("index", {
     title: "구매하기",
     orderId: uuid(),
-    customerName: "김토스",
+    orderName: "中国",
+    customerName: "Citcon001",
+    clientKey: clientKey,
   });
 });
+
+router.get("/vault", function (req, res) {
+    res.render("vault", {
+      title: "Vault",
+      orderId: uuid(),
+      customerName: "Citcon",
+    });
+  });
+
+  router.post("/notification", function (req, res) {
+    console.log(req.body)
+    res.status(200).send('success');
+  });
 
 router.get("/success", function (req, res) {
   got
@@ -30,11 +46,13 @@ router.get("/success", function (req, res) {
     })
     .then(function (response) {
       console.log(response.body);
+      console.log(Buffer.from(secretKey + ":").toString("base64"))
       // TODO: 구매 완료 비즈니스 로직 구현
 
       res.render("success", {
         title: "성공적으로 구매했습니다",
         amount: response.body.totalAmount,
+        json: JSON.stringify(response.body,null,4),
       });
     })
     .catch(function (error) {

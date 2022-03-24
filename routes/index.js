@@ -17,6 +17,19 @@ router.get("/", function (req, res) {
   });
 });
 
+router.get("/pay", function (req, res) {
+    res.render("payment", {
+      title: "Payment",
+      orderId: uuid(),
+      orderName: "Cake",
+      customerName: "Citcon002",
+      pay: "CARD",
+      wallet: "UNIONPAY",
+      clientKey: clientKey,
+      amount: 100,
+    });
+  });
+
 router.get("/vault", function (req, res) {
     res.render("vault", {
       title: "Vault",

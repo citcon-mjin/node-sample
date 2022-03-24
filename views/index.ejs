@@ -53,12 +53,14 @@
                 var card_issuer = frm.elements["card_issuer"].value;
                 var data = {
                     amount: amount,
+                    maxCardInstallmentPlan: 6,
                     orderId: order_id,
                     orderName: "<%= orderName %>",
                     customerName: "<%= customerName %>",
                     successUrl: window.location.origin + "/success",
                     failUrl: window.location.origin + "/fail",
                     //_skipAuth: 'FORCE_SUCCESS',
+                    //appScheme: "alipays://",
                 };
                 var pay = '';
                 if (pay_method === 'TRANSFER') {
@@ -77,7 +79,7 @@
                     data.cardCompany = card_issuer;
                 }
                 console.log('pay type: ', pay);
-                console.log(JSON.stringify(data))
+                console.log(JSON.stringify(data, null, 4))
                 var tossPayments = TossPayments("<%= clientKey %>");
                 tossPayments.requestPayment(pay, data);
             });

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <meta httpEquiv="x-ua-compatible" content="ie=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <link rel="stylesheet" href="/stylesheets/style.css" />
+    <script src="https://js.tosspayments.com/v1"></script>
+    <script>
+        window.onload = function() {
+            var button = document.getElementById("payment-button");
+            button.addEventListener("click", function () {
+                var data = {
+                    amount: "<%= amount %>",
+                    orderId: "<%= orderId %>",
+                    orderName: "<%= orderName %>",
+                    customerName: "<%= customerName %>",
+                    successUrl: window.location.origin + "/toss/success",
+                    failUrl: window.location.origin + "/toss/fail",
+                    flowMode: "DIRECT",
+                    easyPay: "<%= wallet %>",
+                    //_skipAuth: 'FORCE_SUCCESS',
+                };
+                var pay = "<%= pay %>";
+                console.log('pay type: ', pay);
+                console.log(JSON.stringify(data, null, 4));
+                var tossPayments = TossPayments("<%= clientKey %>");
+                tossPayments.requestPayment(pay, data);
+            });
+        }
+    </script>
+  </head>
+  <body>
+    <section>
+      <p>Pay: <%= wallet %></p>
+      <p>Amount: <%= amount %></p>
+    </section>
+    <section>
+        <button id="payment-button">Pay Order</button>
+    </section>
+  </body>
+</html>

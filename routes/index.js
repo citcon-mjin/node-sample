@@ -30,12 +30,45 @@ router.get("/pay", function (req, res) {
     });
   });
 
+  router.get("/auth", function (req, res) {
+    console.log(req.body)
+    got
+    .post("https://api.tosspayments.com/v1/connectpay/authorizations/access-token", {
+      headers: {
+        Authorization:
+          "Basic " + Buffer.from(secretKey + ":").toString("base64"),
+        "Content-Type": "application/json",
+      },
+      json: {
+        grantType: "AuthorizationCode",
+        code: req.query.code,
+        customerKey: req.query.customerKey,
+      },
+      responseType: "json",
+    })
+    .then(function (response) {
+      console.log(response.body);
+
+      res.status(200).json({
+
+      });
+    })
+    .catch(function (error) {
+        res.status(500).json({
+
+        });
+    });
+  });
+
 router.get("/vault", function (req, res) {
     res.render("vault", {
-      title: "Vault",
-      orderId: uuid(),
-      customerName: "Citcon",
-    });
+        title: "Connect Pay",
+        orderId: uuid(),
+        orderName: "Cake",
+        customerKey: "Citcon008",
+        clientKey: clientKey,
+        amount: 100,
+      });
   });
 
   router.post("/notification", function (req, res) {
@@ -59,8 +92,6 @@ router.get("/success", function (req, res) {
     })
     .then(function (response) {
       console.log(response.body);
-      console.log(Buffer.from(secretKey + ":").toString("base64"))
-      // TODO: 구매 완료 비즈니스 로직 구현
 
       res.render("success", {
         title: "성공적으로 구매했습니다",

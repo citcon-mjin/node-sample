@@ -3,48 +3,73 @@
   <head>
     <title><%= title %></title>
     <meta httpEquiv="x-ua-compatible" content="ie=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
     <link rel="stylesheet" href="/stylesheets/style.css" />
+    <script src="https://js.tosspayments.com/v1/connectpay"></script>
+
+
+    <script src="https://js.tosspayments.com/v1"></script>
+    <script>
+        var connectPay = null;
+        window.onload = function() {
+            // 초기화
+            connectPay = ConnectPay("<%= clientKey %>", "<%= customerKey %>", {
+                redirectUrl: 'https://d4db-220-184-255-35.ngrok.io/toss/auth',
+                // UI 커스터마이징 옵션 설정 (optional)
+                ui: {
+                highlightColor: '#26C2E3',
+                buttonStyle: 'default',
+                showNavigationBar: false,
+                labels: {
+                    oneTouchPay: 'Test Label',
+                },
+                },
+            });
+
+            var paymentBtn = document.getElementById("payment-button");
+            var addBtn = document.getElementById("add-button");
+            paymentBtn.addEventListener("click", paymentAction);
+
+            addBtn.addEventListener("click", addBtnAction);
+        }
+
+        function paymentAction() {
+            connectPay.requestPayment({
+            amount: "<%= amount %>", // 결제 금액
+            orderId: 'DRHIIY3KswmB4UWymi2tA', // 주문에 대한 ID 값
+            orderName: '토스 티셔츠 외 2건', // 주문명
+            successUrl: window.location.origin + "/success",
+            failUrl: window.location.origin + "/fail",
+            customerEmail: 'customer@example.com', // 고객의 이메일 주소 (optional)
+            })
+        }
+
+        function addBtnAction() {
+            connectPay
+                .addPaymentMethod('카드')
+                .then(function (methods) {
+                    // 성공 처리
+                    console.log(methods)
+                })
+                .catch(function (error) {
+                    if (error.code === 'USER_CANCEL') {
+                    // 사용자가 결제창을 닫은 경우 에러 처리
+                    }
+                })
+        }
+        
+    </script>
   </head>
   <body>
     <section>
-      <button id="payment-button">Vault</button>
+        <p>Amount: <%= amount %></p>
+      </section>
+    <section>
+        <button id="payment-button">Pay Order</button>
+        <button id="add-button">Add Payment Method</button>
     </section>
-    <script src="https://js.tosspayments.com/v1/connectpay"></script>
-    <script>
-            var button = document.getElementById("payment-button");
-
-            button.addEventListener("click", function () {
-              var clientKey = "test_ck_7XZYkKL4MrjZ0QQakDEr0zJwlEWR"; // 테스트용 클라이언트 키
-              var customerKey = "r_f4fVYM96paeT3eCtP8c"; // 고객을 식별할 수 있는 키
-              // 2. 초기화
-              var connectpay = ConnectPay(clientKey, customerKey, {
-                redirectUrl: "http://localhost:9000/auth",
-                ui: {
-                  buttonStyle: "full",
-                  highlightColor: "#26C2E3",
-                  labels: {
-                    oneTouchPay: "XXXX",
-                  },
-                },
-              });
-console.log(connectpay)
-              connectpay.requestPayment({
-                amount: 15000,
-                orderId: 'knBnmLqgFu78jc7HxbLqq',
-                orderName: '토스 티셔츠 외 2건',
-                customerName: '박토스',
-                successUrl: window.location.origin + '/success',
-                failUrl: window.location.origin + '/fail',
-                customerEmail: 'customer@example.com',
-                shippingAddress: '서울특별시 강남구 역삼동 647-9 15층',
-            }).catch(function (error){
-                if (error.code) {
-                // 사용자가 결제창을 닫은 경우 에러 처리
-                }
-            });
-
-            });
-    </script>
   </body>
 </html>

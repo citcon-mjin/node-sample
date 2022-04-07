@@ -17,7 +17,7 @@
         window.onload = function() {
             // 초기화
             connectPay = ConnectPay("<%= clientKey %>", "<%= customerKey %>", {
-                redirectUrl: 'https://d4db-220-184-255-35.ngrok.io/toss/auth',
+                redirectUrl: 'https://6535-183-157-60-20.ngrok.io/toss/auth?a=1',
                 // UI 커스터마이징 옵션 설정 (optional)
                 ui: {
                 highlightColor: '#26C2E3',
@@ -31,9 +31,13 @@
 
             var paymentBtn = document.getElementById("payment-button");
             var addBtn = document.getElementById("add-button");
-            paymentBtn.addEventListener("click", paymentAction);
+            var agreeBtn = document.getElementById("agree-button");
+            var getPaymentMethodsBtn = document.getElementById("get-methods-button");
 
+            paymentBtn.addEventListener("click", paymentAction);
             addBtn.addEventListener("click", addBtnAction);
+            agreeBtn.addEventListener("click", agreeBtnAction);
+            getPaymentMethodsBtn.addEventListener("click", getPaymentMethodsBtnAction);
         }
 
         function paymentAction() {
@@ -49,10 +53,35 @@
 
         function addBtnAction() {
             connectPay
-                .addPaymentMethod('카드')
+                .addPaymentMethod()
                 .then(function (methods) {
                     // 성공 처리
                     console.log(methods)
+                })
+                .catch(function (error) {
+                    if (error.code === 'USER_CANCEL') {
+                    // 사용자가 결제창을 닫은 경우 에러 처리
+                    }
+                })
+        }
+
+        function agreeBtnAction() {
+            connectPay.requestAgreement('빌링') // 자동 결제 선택 약관 동의 호출
+                .then(function () {
+                    // 성공 처리
+                    cnosole.log(1)
+                })
+                .catch(function (error) {
+                    if (error.code === 'USER_CANCEL') {
+                    // 사용자가 결제창을 닫은 경우 에러 처리
+                    }
+                })
+        }
+
+        function getPaymentMethodsBtnAction() {
+            connectPay.getPaymentMethods()
+                .then(function (methods) {
+                    // 성공 처리
                 })
                 .catch(function (error) {
                     if (error.code === 'USER_CANCEL') {
@@ -70,6 +99,8 @@
     <section>
         <button id="payment-button">Pay Order</button>
         <button id="add-button">Add Payment Method</button>
+        <button id="agree-button">Request Agreement</button>
+        <button id="get-methods-button">Get Payment Methods</button>
     </section>
   </body>
 </html>

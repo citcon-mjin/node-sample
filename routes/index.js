@@ -65,7 +65,7 @@ router.get("/vault", function (req, res) {
         title: "Connect Pay",
         orderId: uuid(),
         orderName: "Cake",
-        customerKey: "Citcon008",
+        customerKey: "Citcon009",
         clientKey: clientKey,
         amount: 100,
       });

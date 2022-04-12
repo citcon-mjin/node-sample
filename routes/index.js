@@ -30,6 +30,17 @@ router.get("/pay", function (req, res) {
     });
   });
 
+  router.get("/vault", function (req, res) {
+    res.render("vault", {
+        title: "Connect Pay",
+        orderId: uuid(),
+        orderName: "Cake",
+        customerKey: "Citcon009",
+        clientKey: clientKey,
+        amount: 100,
+      });
+  });
+
   router.get("/auth", function (req, res) {
     console.log(req.body)
     got
@@ -58,17 +69,6 @@ router.get("/pay", function (req, res) {
 
         });
     });
-  });
-
-router.get("/vault", function (req, res) {
-    res.render("vault", {
-        title: "Connect Pay",
-        orderId: uuid(),
-        orderName: "Cake",
-        customerKey: "Citcon009",
-        clientKey: clientKey,
-        amount: 100,
-      });
   });
 
   router.post("/notification", function (req, res) {

@@ -8,16 +8,16 @@
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
     <link rel="stylesheet" href="/stylesheets/style.css" />
-    <script src="https://js.tosspayments.com/v1/connectpay"></script>
+    <script src="https://js.tosspayments.com/v1/brandpay"></script>
 
 
     <script src="https://js.tosspayments.com/v1"></script>
     <script>
-        var connectPay = null;
+        var brandPay = null;
         window.onload = function() {
             // 초기화
-            connectPay = ConnectPay("<%= clientKey %>", "<%= customerKey %>", {
-                redirectUrl: 'https://6535-183-157-60-20.ngrok.io/toss/auth?a=1',
+            brandPay = BrandPay("<%= clientKey %>", "<%= customerKey %>", {
+                redirectUrl: 'http://localhost:9000/auth?a=1',
                 // UI 커스터마이징 옵션 설정 (optional)
                 ui: {
                 highlightColor: '#26C2E3',
@@ -41,7 +41,7 @@
         }
 
         function paymentAction() {
-            connectPay.requestPayment({
+            brandPay.requestPayment({
             amount: "<%= amount %>", // 결제 금액
             orderId: 'DRHIIY3KswmB4UWymi2tA', // 주문에 대한 ID 값
             orderName: '토스 티셔츠 외 2건', // 주문명
@@ -52,7 +52,7 @@
         }
 
         function addBtnAction() {
-            connectPay
+            brandPay
                 .addPaymentMethod()
                 .then(function (methods) {
                     // 성공 처리
@@ -66,7 +66,7 @@
         }
 
         function agreeBtnAction() {
-            connectPay.requestAgreement('빌링') // 자동 결제 선택 약관 동의 호출
+            brandPay.requestAgreement('빌링') // 자동 결제 선택 약관 동의 호출
                 .then(function () {
                     // 성공 처리
                     cnosole.log(1)
@@ -79,7 +79,7 @@
         }
 
         function getPaymentMethodsBtnAction() {
-            connectPay.getPaymentMethods()
+            brandPay.getPaymentMethods()
                 .then(function (methods) {
                     // 성공 처리
                 })

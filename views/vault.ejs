@@ -11,7 +11,6 @@
     <script src="https://js.tosspayments.com/v1/brandpay"></script>
 
 
-    <script src="https://js.tosspayments.com/v1"></script>
     <script>
         var brandPay = null;
         window.onload = function() {
@@ -22,7 +21,7 @@
                 ui: {
                 highlightColor: '#26C2E3',
                 buttonStyle: 'default',
-                showNavigationBar: false,
+                showNavigationBar: true,
                 labels: {
                     oneTouchPay: 'Test Label',
                 },
@@ -59,6 +58,7 @@
                     console.log(methods)
                 })
                 .catch(function (error) {
+                    console.log(JSON.stringify(error));
                     if (error.code === 'USER_CANCEL') {
                     // 사용자가 결제창을 닫은 경우 에러 처리
                     }
@@ -72,6 +72,7 @@
                     cnosole.log(1)
                 })
                 .catch(function (error) {
+                    console.log(JSON.stringify(error));
                     if (error.code === 'USER_CANCEL') {
                     // 사용자가 결제창을 닫은 경우 에러 처리
                     }
@@ -82,8 +83,10 @@
             brandPay.getPaymentMethods()
                 .then(function (methods) {
                     // 성공 처리
+                    console.log(methods)
                 })
                 .catch(function (error) {
+                    console.log(JSON.stringify(error));
                     if (error.code === 'USER_CANCEL') {
                     // 사용자가 결제창을 닫은 경우 에러 처리
                     }
